@@ -1,7 +1,7 @@
 package ativ.atg;
 
-public class MusicQ1 {
-    private String Id;
+public class Node {
+	private String Id;
     private String Label;
     private int weight;
     
@@ -23,8 +23,12 @@ public class MusicQ1 {
 	public void setWeight(int weight) {
 		this.weight = weight;
 	}
+	
 	@Override
 	public String toString() {
-		return "MusicQ1 [Id=" + Id + ", Label=" + Label + ", weight=" + weight + "]";
+		if(weight!=0) {
+			return "Node [Id=" + Id + ", Label=" + Label + ", weight=" + weight + "]";
+		}
+		else return "Node [Id=" + Id + ", Label=" + Label + "]";
 	}
 }

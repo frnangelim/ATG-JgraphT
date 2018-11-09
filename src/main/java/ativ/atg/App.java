@@ -20,29 +20,31 @@ public class App {
 	private static final String Q3_CSV_FILE_PATH_EDGES = "/home/giuseppe/Documents/ATG-JgraphT/resource/q3/edges.csv";
 	private static final String Q4_ARTIST_EDGES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/artistsEdges.csv";
 	private static final String Q4_ARTIST_NODES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/artistsNodes.csv";
-	private static final String Q4_PLAYLIST_NODES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/playlistNodes.csv";
+	private static final String Q4_PLAYLIST_NODES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/playlistsNodes.csv";
 	
     public static void main(String[] args) throws IOException {  
     	getTop5(); 
+    	
     	recomendPlaylisyBySong();
     	
     	String inputPlaylist = "July 2013";
     	getRecommendedPlaylist(inputPlaylist);
-    
+    	
+    	recomendPlaylistByArtistWithoutTheArtist();
     }
     
 	@SuppressWarnings("deprecation")
 	public static SimpleWeightedGraph q1Graph() throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(Q1_CSV_FILE_PATH), ',');
 		
-		HeaderColumnNameMappingStrategy<MusicQ1> beanStrategy = new HeaderColumnNameMappingStrategy<MusicQ1>();
-		beanStrategy.setType(MusicQ1.class);
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);
 		
-		CsvToBean<MusicQ1> csvToBean = new CsvToBean<MusicQ1>();
-		List<MusicQ1> musics = csvToBean.parse(beanStrategy, reader);
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> musics = csvToBean.parse(beanStrategy, reader);
 		
-		SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph = new SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-		for (MusicQ1 music : musics) {
+		SimpleWeightedGraph<Node, DefaultWeightedEdge> graph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node music : musics) {
 			graph.addVertex(music);
 		}
 		reader.close();
@@ -54,14 +56,14 @@ public class App {
 	public static SimpleWeightedGraph q2Graph() throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(Q2_CSV_FILE_PATH), ',');
 		
-		HeaderColumnNameMappingStrategy<Playlist> beanStrategy = new HeaderColumnNameMappingStrategy<Playlist>();
-		beanStrategy.setType(Playlist.class);	
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);	
 		
-		CsvToBean<Playlist> csvToBean = new CsvToBean<Playlist>();
-		List<Playlist> playlists = csvToBean.parse(beanStrategy, reader);
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> playlists = csvToBean.parse(beanStrategy, reader);
 		
-		SimpleWeightedGraph<Playlist, DefaultWeightedEdge> graph = new SimpleWeightedGraph<Playlist, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-		for (Playlist playlist : playlists) {
+		SimpleWeightedGraph<Node, DefaultWeightedEdge> graph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node playlist : playlists) {
 			graph.addVertex(playlist);
 		}
 		reader.close();
@@ -69,23 +71,63 @@ public class App {
 		return graph;	   
 	}
 	
-//	@SuppressWarnings("deprecation")
-//	public static SimpleWeightedGraph q4Part1Graph() throws IOException {
-//		
-//	}
+	@SuppressWarnings("deprecation")
+	public static WeightedPseudograph q3Graph() throws IOException {
+		// NODES
+		CSVReader reader = new CSVReader(new FileReader(Q3_CSV_FILE_PATH_NODES), ',');
+		
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);
+		
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> playlists = csvToBean.parse(beanStrategy, reader);
+		
+		WeightedPseudograph<Node, DefaultWeightedEdge> graph = new WeightedPseudograph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node playlist : playlists) {
+			graph.addVertex(playlist);
+		}
+		
+		reader.close();
+		
+		graph = setEdges(graph, Q3_CSV_FILE_PATH_EDGES);
+		
+		return graph;	   
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static WeightedPseudograph q4Part1Graph() throws IOException {
+		CSVReader reader = new CSVReader(new FileReader(Q4_ARTIST_NODES_CSV_FILE_PATH), ',');
+		
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);
+		
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> artists = csvToBean.parse(beanStrategy, reader);
+		
+		WeightedPseudograph<Node, DefaultWeightedEdge> graph = new WeightedPseudograph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node artist : artists) {
+			graph.addVertex(artist);
+		}
+		
+		reader.close();
+		
+		graph = setEdges(graph, Q4_ARTIST_EDGES_CSV_FILE_PATH);
+		
+		return graph;
+	}
 	
 	@SuppressWarnings("deprecation")
 	public static SimpleWeightedGraph q4Part2Graph() throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(Q4_PLAYLIST_NODES_CSV_FILE_PATH), ',');
 		
-		HeaderColumnNameMappingStrategy<Playlist> beanStrategy = new HeaderColumnNameMappingStrategy<Playlist>();
-		beanStrategy.setType(Playlist.class);	
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);	
 		
-		CsvToBean<Playlist> csvToBean = new CsvToBean<Playlist>();
-		List<Playlist> playlists = csvToBean.parse(beanStrategy, reader);
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> playlists = csvToBean.parse(beanStrategy, reader);
 		
-		SimpleWeightedGraph<Playlist, DefaultWeightedEdge> graph = new SimpleWeightedGraph<Playlist, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-		for (Playlist playlist : playlists) {
+		SimpleWeightedGraph<Node, DefaultWeightedEdge> graph = new SimpleWeightedGraph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node playlist : playlists) {
 			graph.addVertex(playlist);
 		}
 		reader.close();
@@ -93,42 +135,46 @@ public class App {
 		return graph;
 	}
 	
-	public static void recomendPlaylistByArtistWithoutTheArtist() throws IOException {
-		SimpleWeightedGraph<Playlist, DefaultWeightedEdge> playlistsGraph = q4Part2Graph();
+	public static WeightedPseudograph setEdges(WeightedPseudograph<Node, DefaultWeightedEdge> graph, String path) throws IOException {	
+		// EDGES
+		CSVReader reader2 = new CSVReader(new FileReader(path), ',');
+	
+		HeaderColumnNameMappingStrategy<Edge> beanStrategy2 = new HeaderColumnNameMappingStrategy<Edge>();
+		beanStrategy2.setType(Edge.class);
 		
-		Playlist recomendedPlaylist = null;
+		CsvToBean<Edge> csvToBean2 = new CsvToBean<Edge>();
+		List<Edge> edges = csvToBean2.parse(beanStrategy2, reader2);
 		
-		for(Playlist playlist : playlistsGraph.vertexSet()) {
-			if(recomendedPlaylist==null) 
-				recomendedPlaylist = playlist;
-			else if(playlist.getWeight() > recomendedPlaylist.getWeight()) {
-				recomendedPlaylist = playlist;
+		for(Edge edge : edges) {
+			String sourceID = edge.getSource();
+			String targetID = edge.getTarget();
+			
+			Node source = null;
+			Node target = null;
+			
+			for (Node playlist : graph.vertexSet()) {
+				
+				if(playlist.getId().equals(sourceID)) {
+					source = playlist;
+				}
+				if(playlist.getId().equals(targetID)) {
+					target = playlist;
+				}
+			}
+			
+			if(source != null && target != null) {
+				DefaultWeightedEdge edgeObj = graph.addEdge(source, target);
+				graph.setEdgeWeight(edgeObj, edge.getWeight());
 			}
 		}
-		
-		System.out.println(recomendedPlaylist.toString() + '\n');
+		return graph;
 	}
 	
-	public static void recomendPlaylisyBySong() throws IOException {
-		SimpleWeightedGraph<Playlist, DefaultWeightedEdge> graph = q2Graph();
-		Playlist recomendedPlaylist = null;
-		
-		for(Playlist playlist : graph.vertexSet()) {
-			if(recomendedPlaylist==null) 
-				recomendedPlaylist = playlist;
-			else if(playlist.getWeight() > recomendedPlaylist.getWeight()) {
-				recomendedPlaylist = playlist;
-			}
-		}
-		System.out.println(recomendedPlaylist.toString() + '\n');
-	}
-	
+	public static ArrayList<Node> getTop5() throws IOException {
+		SimpleWeightedGraph<Node, DefaultWeightedEdge> graph = q1Graph();
 
-	public static ArrayList<MusicQ1> getTop5() throws IOException {
-		SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph = q1Graph();
-
-		ArrayList<MusicQ1> top5 = new ArrayList<>();
-    	for(MusicQ1 v : graph.vertexSet()) {
+		ArrayList<Node> top5 = new ArrayList<>();
+    	for(Node v : graph.vertexSet()) {
     		int currentWeight = v.getWeight();
     		
     		if(top5.size() == 0) {
@@ -149,75 +195,39 @@ public class App {
 				}
     		}
 		}
-
-    	System.out.print(top5.toString() + '\n');
+    	
+    	System.out.println("Questão #1");
+    	
+    	for(Node song : top5) {
+    		System.out.print(song.toString() + "\n");
+    	}
+    	
+    	
     	return top5;
 	}
 	
-	@SuppressWarnings("deprecation")
-	public static WeightedPseudograph q3() throws IOException {
-		// NODES
-		CSVReader reader = new CSVReader(new FileReader(Q3_CSV_FILE_PATH_NODES), ',');
+	public static void recomendPlaylisyBySong() throws IOException {
+		SimpleWeightedGraph<Node, DefaultWeightedEdge> graph = q2Graph();
+		Node recomendedPlaylist = null;
 		
-		HeaderColumnNameMappingStrategy<PlaylistQ3> beanStrategy = new HeaderColumnNameMappingStrategy<PlaylistQ3>();
-		beanStrategy.setType(PlaylistQ3.class);
-		
-		CsvToBean<PlaylistQ3> csvToBean = new CsvToBean<PlaylistQ3>();
-		List<PlaylistQ3> playlists = csvToBean.parse(beanStrategy, reader);
-		
-		WeightedPseudograph<PlaylistQ3, DefaultWeightedEdge> graph = new WeightedPseudograph<PlaylistQ3, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-		for (PlaylistQ3 playlist : playlists) {
-			graph.addVertex(playlist);
-		}
-		
-		reader.close();
-		
-		graph = setEdges(graph);
-		
-		return graph;	   
-	}
-	
-	public static WeightedPseudograph setEdges(WeightedPseudograph<PlaylistQ3, DefaultWeightedEdge> graph) throws IOException {	
-		// EDGES
-		CSVReader reader2 = new CSVReader(new FileReader(Q3_CSV_FILE_PATH_EDGES), ',');
-	
-		HeaderColumnNameMappingStrategy<EdgesQ3> beanStrategy2 = new HeaderColumnNameMappingStrategy<EdgesQ3>();
-		beanStrategy2.setType(EdgesQ3.class);
-		
-		CsvToBean<EdgesQ3> csvToBean2 = new CsvToBean<EdgesQ3>();
-		List<EdgesQ3> edges = csvToBean2.parse(beanStrategy2, reader2);
-		
-		for(EdgesQ3 edge : edges) {
-			String sourceID = edge.getSource();
-			String targetID = edge.getTarget();
-			
-			PlaylistQ3 source = null;
-			PlaylistQ3 target = null;
-			
-			for (PlaylistQ3 playlist : graph.vertexSet()) {
-				
-				if(playlist.getId().equals(sourceID)) {
-					source = playlist;
-				}
-				if(playlist.getId().equals(targetID)) {
-					target = playlist;
-				}
-			}
-			
-			if(source != null && target != null) {
-				DefaultWeightedEdge edgeObj = graph.addEdge(source, target);
-				graph.setEdgeWeight(edgeObj, edge.getWeight());
+		for(Node playlist : graph.vertexSet()) {
+			if(recomendedPlaylist==null) 
+				recomendedPlaylist = playlist;
+			else if(playlist.getWeight() > recomendedPlaylist.getWeight()) {
+				recomendedPlaylist = playlist;
 			}
 		}
-		return graph;
+		
+		System.out.println("\nQuestão #2");
+		System.out.println(recomendedPlaylist.toString());
 	}
 	
 	public static String getRecommendedPlaylist(String inputPlaylist) throws IOException {
-		WeightedPseudograph<PlaylistQ3, DefaultWeightedEdge> graph = q3();
+		WeightedPseudograph<Node, DefaultWeightedEdge> graph = q3Graph();
 		
-		PlaylistQ3 recommendedPlaylist = null;
+		Node recommendedPlaylist = null;
 		
-		for(PlaylistQ3 playlist : graph.vertexSet()) {
+		for(Node playlist : graph.vertexSet()) {
 			if(playlist.getLabel().equalsIgnoreCase(inputPlaylist)) {
 				int highestEdgeWeight = 0;
 				for(DefaultWeightedEdge edge : graph.edgesOf(playlist)) {
@@ -229,10 +239,28 @@ public class App {
 				}
 			}
 		}
-		
+		System.out.println("\nQuestão #3");
 		System.out.println(recommendedPlaylist);
 		
 		return recommendedPlaylist.getLabel();
 	}
 	
+public static void recomendPlaylistByArtistWithoutTheArtist() throws IOException {
+		
+		SimpleWeightedGraph<Node, DefaultWeightedEdge> playlistsGraph = q4Part2Graph();
+		WeightedPseudograph<Node, DefaultWeightedEdge> artistsGraph = q4Part1Graph();
+		
+		Node recomendedPlaylist = null;
+		
+		for(Node playlist : playlistsGraph.vertexSet()) {
+			if(recomendedPlaylist==null) 
+				recomendedPlaylist = playlist;
+			else if(playlist.getWeight() > recomendedPlaylist.getWeight()) {
+				recomendedPlaylist = playlist;
+			}
+		}
+		
+		System.out.println("\nQuestão #4");
+		System.out.println(recomendedPlaylist.toString());
+	}
 }

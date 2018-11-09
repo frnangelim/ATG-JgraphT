@@ -1,6 +1,6 @@
 package ativ.atg;
 
-public class EdgesQ3 {
+public class Edge {
 	
 	private String Source;
 	private String Target;
