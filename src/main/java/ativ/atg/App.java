@@ -13,8 +13,8 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
 public class App {
-	private static final String Q1_CSV_FILE_PATH = "/home/francisco/atg/resource/q1/nodes.csv";
-	private static final String Q2_CSV_FILE_PATH = "/home/francisco/atg/resource/q2/nodes.csv";
+	private static final String Q1_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q1/nodes.csv";
+	private static final String Q2_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q2/nodes.csv";
     
     public static void main(String[] args) throws IOException {
     	SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graphQ1 = q1();  
@@ -49,7 +49,7 @@ public class App {
 		CSVReader reader = new CSVReader(new FileReader(Q2_CSV_FILE_PATH), ',');
 		
 		HeaderColumnNameMappingStrategy<Playlist> beanStrategy = new HeaderColumnNameMappingStrategy<Playlist>();
-		beanStrategy.setType(Playlist.class);
+		beanStrategy.setType(Playlist.class);	
 		
 		CsvToBean<Playlist> csvToBean = new CsvToBean<Playlist>();
 		List<Playlist> playlists = csvToBean.parse(beanStrategy, reader);
@@ -73,7 +73,7 @@ public class App {
 				recomendedPlaylist = playlist;
 			}
 		}
-		System.out.println(recomendedPlaylist.toString());
+		System.out.println(recomendedPlaylist.toString() + '\n');
 	}
 	
 	public static void getTop5(SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph) {
@@ -99,6 +99,6 @@ public class App {
 				}
     		}
 		}
-		System.out.print(top5.toString());
+		System.out.print(top5.toString() + '\n');
 	}
 }
