@@ -1,22 +1,30 @@
 package ativ.atg;
 
 public class MusicQ1 {
-    private String track_uri;
-    private String track_name;
+    private String Id;
+    private String Label;
+    private int weight;
     
-	public String getTrack_uri() {
-		return track_uri;
+	public String getId() {
+		return Id;
 	}
-	public void setTrack_uri(String track_uri) {
-		this.track_uri = track_uri;
+	public void setId(String id) {
+		Id = id;
 	}
-	public String getTrack_name() {
-		return track_name;
+	public String getLabel() {
+		return Label;
 	}
-	public void setTrack_name(String track_name) {
-		this.track_name = track_name;
+	public void setLabel(String label) {
+		Label = label;
 	}
-    
-    
-    
+	public int getWeight() {
+		return weight;
+	}
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
+	@Override
+	public String toString() {
+		return "MusicQ1 [Id=" + Id + ", Label=" + Label + ", weight=" + weight + "]";
+	}
 }
