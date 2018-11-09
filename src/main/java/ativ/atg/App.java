@@ -14,13 +14,25 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
 public class App {
 
-	private static final String Q1_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q1/nodes.csv";
-	private static final String Q2_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q2/nodes.csv";
-	private static final String Q3_CSV_FILE_PATH_NODES = "/home/giuseppe/Documents/ATG-JgraphT/resource/q3/nodes.csv";
-	private static final String Q3_CSV_FILE_PATH_EDGES = "/home/giuseppe/Documents/ATG-JgraphT/resource/q3/edges.csv";
-	private static final String Q4_ARTIST_EDGES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/artistsEdges.csv";
-	private static final String Q4_ARTIST_NODES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/artistsNodes.csv";
-	private static final String Q4_PLAYLIST_NODES_CSV_FILE_PATH = "/home/giuseppe/Documents/ATG-JgraphT/resource/q4/playlistsNodes.csv";
+	static {
+	    String currentDir = System.getProperty("user.dir");
+
+        Q1_CSV_FILE_PATH = currentDir + "/resource/q1/nodes.csv";
+        Q2_CSV_FILE_PATH = currentDir + "/resource/q2/nodes.csv";
+        Q3_CSV_FILE_PATH_NODES = currentDir + "/resource/q3/nodes.csv";
+        Q3_CSV_FILE_PATH_EDGES = currentDir + "/resource/q3/edges.csv";
+        Q4_ARTIST_EDGES_CSV_FILE_PATH = currentDir + "/resource/q4/artistsEdges.csv";
+        Q4_ARTIST_NODES_CSV_FILE_PATH = currentDir + "/resource/q4/artistsNodes.csv";
+        Q4_PLAYLIST_NODES_CSV_FILE_PATH = currentDir + "/resource/q4/playlistsNodes.csv";
+	}
+
+	private static final String Q1_CSV_FILE_PATH;
+	private static final String Q2_CSV_FILE_PATH;
+	private static final String Q3_CSV_FILE_PATH_NODES;
+	private static final String Q3_CSV_FILE_PATH_EDGES;
+	private static final String Q4_ARTIST_EDGES_CSV_FILE_PATH;
+	private static final String Q4_ARTIST_NODES_CSV_FILE_PATH;
+	private static final String Q4_PLAYLIST_NODES_CSV_FILE_PATH;
 	
     public static void main(String[] args) throws IOException {  
     	getTop5(); 
