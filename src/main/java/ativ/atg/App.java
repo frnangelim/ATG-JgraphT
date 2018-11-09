@@ -19,8 +19,30 @@ public class App {
     public static void main(String[] args) throws IOException {
     	SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph = q1();  
     	System.out.println(graph.vertexSet().size());
-    	
-    	ArrayList<MusicQ1> top5 = new ArrayList<>();
+    }
+   
+    
+	@SuppressWarnings("deprecation")
+	public static SimpleWeightedGraph q1() throws IOException {
+		CSVReader reader = new CSVReader(new FileReader(Q1_CSV_FILE_PATH), ',');
+		
+		HeaderColumnNameMappingStrategy<MusicQ1> beanStrategy = new HeaderColumnNameMappingStrategy<MusicQ1>();
+		beanStrategy.setType(MusicQ1.class);
+		
+		CsvToBean<MusicQ1> csvToBean = new CsvToBean<MusicQ1>();
+		List<MusicQ1> musics = csvToBean.parse(beanStrategy, reader);
+		
+		SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph = new SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (MusicQ1 music : musics) {
+			graph.addVertex(music);
+		}
+		reader.close();
+		
+		return graph;	   
+	}
+	
+	private void getTop5(SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph) {
+		ArrayList<MusicQ1> top5 = new ArrayList<>();
     	for(MusicQ1 v : graph.vertexSet()) {
     		int currentWeight = v.getWeight();
     		
@@ -43,26 +65,5 @@ public class App {
     		}
 		}
 		System.out.print(top5.toString());
-    }
-   
-    
-	@SuppressWarnings("deprecation")
-	public static SimpleWeightedGraph q1() throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(Q1_CSV_FILE_PATH), ',');
-		
-		HeaderColumnNameMappingStrategy<MusicQ1> beanStrategy = new HeaderColumnNameMappingStrategy<MusicQ1>();
-		beanStrategy.setType(MusicQ1.class);
-		
-		CsvToBean<MusicQ1> csvToBean = new CsvToBean<MusicQ1>();
-		List<MusicQ1> musics = csvToBean.parse(beanStrategy, reader);
-		
-		SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph = new SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-		for (MusicQ1 music : musics) {
-			graph.addVertex(music);
-		}
-		reader.close();
-		
-		return graph;	   
 	}
-
 }
