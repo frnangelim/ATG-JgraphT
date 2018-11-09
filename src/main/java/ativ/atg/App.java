@@ -7,7 +7,6 @@ import org.jgrapht.graph.*;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.opencsv.bean.CsvToBean;
@@ -15,6 +14,7 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
 public class App {
 	private static final String Q1_CSV_FILE_PATH = "/home/francisco/atg/resource/q1/nodes.csv";
+	private static final String Q2_CSV_FILE_PATH = "/home/francisco/atg/resource/q2/nodes.csv";
 	private static final String Q3_CSV_FILE_PATH_NODES = "/home/francisco/atg/resource/q3/nodes.csv";
 	private static final String Q3_CSV_FILE_PATH_EDGES = "/home/francisco/atg/resource/q3/edges.csv";
     
@@ -27,7 +27,7 @@ public class App {
     	String recommendedPlaylist = getRecommendedPlaylist(inputPlaylist, graphQ3);
     	System.out.println(recommendedPlaylist);
     }
-   
+
     
 	@SuppressWarnings("deprecation")
 	public static SimpleWeightedGraph q1() throws IOException {
@@ -46,6 +46,38 @@ public class App {
 		reader.close();
 		
 		return graph;	   
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static SimpleWeightedGraph q2() throws IOException {
+		CSVReader reader = new CSVReader(new FileReader(Q2_CSV_FILE_PATH), ',');
+		
+		HeaderColumnNameMappingStrategy<Playlist> beanStrategy = new HeaderColumnNameMappingStrategy<Playlist>();
+		beanStrategy.setType(Playlist.class);	
+		
+		CsvToBean<Playlist> csvToBean = new CsvToBean<Playlist>();
+		List<Playlist> playlists = csvToBean.parse(beanStrategy, reader);
+		
+		SimpleWeightedGraph<Playlist, DefaultWeightedEdge> graph = new SimpleWeightedGraph<Playlist, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Playlist playlist : playlists) {
+			graph.addVertex(playlist);
+		}
+		reader.close();
+		
+		return graph;	   
+	}
+	
+	public static void recomendPlaylisyBySong(SimpleWeightedGraph<Playlist, DefaultWeightedEdge> graph) {
+		Playlist recomendedPlaylist = null;
+		
+		for(Playlist playlist : graph.vertexSet()) {
+			if(recomendedPlaylist==null) 
+				recomendedPlaylist = playlist;
+			else if(playlist.getWeight() > recomendedPlaylist.getWeight()) {
+				recomendedPlaylist = playlist;
+			}
+		}
+		System.out.println(recomendedPlaylist.toString() + '\n');
 	}
 	
 	public static ArrayList<MusicQ1> getTop5(SimpleWeightedGraph<MusicQ1, DefaultWeightedEdge> graph) {
@@ -71,6 +103,8 @@ public class App {
 				}
     		}
 		}
+
+    	System.out.print(top5.toString() + '\n');
     	return top5;
 	}
 	
