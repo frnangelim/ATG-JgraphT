@@ -4,7 +4,7 @@ public class Node {
 	private String Id;
     private String Label;
     private int weight;
-    
+   
 	public String getId() {
 		return Id;
 	}

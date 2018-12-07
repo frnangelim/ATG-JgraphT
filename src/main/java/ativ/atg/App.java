@@ -11,6 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jgrapht.Graph;
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector;
+import org.jgrapht.alg.interfaces.StrongConnectivityAlgorithm;
+
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
@@ -40,24 +44,35 @@ public class App {
 	 
     public static void main(String[] args) throws IOException {  
     	String inputPlaylist = "July 2013";
-    	getRecommendedPlaylist(inputPlaylist);
-//    	getMostFamousAlbum();
+    	getMostFamousAlbum();
     	getArtistWithMostDistinctSongs();
+    	getRecommendedPlaylist(inputPlaylist);
     	collaborativePlaylistsAreMoreEclectics();
     }
     
     public static void getMostFamousAlbum() throws IOException {
     	WeightedPseudograph<Node, DefaultWeightedEdge> graph = q1Graph();
     	int maxWeight = 0;
-    	Node album = null;
+    	String album = null;
     	
-    	for(Node music : graph.vertexSet()) {
-    		int currentEdgeWeight = graph.edgesOf(music).size();
-			if(currentEdgeWeight > maxWeight) {
-				maxWeight = currentEdgeWeight;
-				album = music;
-			}
+    	 StrongConnectivityAlgorithm<Node, DefaultWeightedEdge> scAlg = 
+    			 new KosarajuStrongConnectivityInspector<>(graph);
+        List<Graph<Node, DefaultWeightedEdge>> stronglyConnectedSubgraphs =
+            scAlg.getStronglyConnectedComponents();
+    	
+    	for(Graph<Node, DefaultWeightedEdge> subgraph : stronglyConnectedSubgraphs) {
+    		for(Node music : subgraph.vertexSet()) {
+    			int currentEdgeWeight = graph.edgesOf(music).size();
+    			if(currentEdgeWeight > maxWeight) {
+    				maxWeight = currentEdgeWeight;
+    				album = music.getLabel();
+    			}
+    			break;
+    		}
     	}
+    	
+    	System.out.println("\nQuestão #1");
+    	System.out.println(album);
 	}
     
 	@SuppressWarnings("deprecation")
@@ -361,7 +376,7 @@ public class App {
 			}
 		}
 		System.out.println("\nQuestão #3");
-		System.out.println(recommendedPlaylist);
+		System.out.println(recommendedPlaylist.getLabel());
 		
 		return recommendedPlaylist.getLabel();
 	}
