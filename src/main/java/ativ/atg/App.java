@@ -45,15 +45,19 @@ public class App {
     public static void getMostFamousAlbum() throws IOException {
     	WeightedPseudograph<Node, DefaultWeightedEdge> graph = q1Graph();
     	int maxWeight = 0;
-    	Node album = null;
+    	String album = null;
     	
+    	System.out.println(graph.vertexSet().size());
     	for(Node music : graph.vertexSet()) {
     		int currentEdgeWeight = graph.edgesOf(music).size();
 			if(currentEdgeWeight > maxWeight) {
 				maxWeight = currentEdgeWeight;
-				album = music;
+				album = music.getAlbum();
 			}
     	}
+    	
+    	System.out.println("Questão #1");
+    	System.out.println(album);
 	}
     
 	@SuppressWarnings("deprecation")

@@ -4,7 +4,14 @@ public class Node {
 	private String Id;
     private String Label;
     private int weight;
+    private String Album;
     
+	public String getAlbum() {
+		return Album;
+	}
+	public void setAlbum(String album) {
+		this.Album = album;
+	}
 	public String getId() {
 		return Id;
 	}
