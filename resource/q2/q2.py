@@ -33,9 +33,9 @@ def setEdges():
 def generateCSV():
 	with open('nodes.csv', mode='w') as nodes_file:
 		nodes_writer = csv.writer(nodes_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-		nodes_writer.writerow(['Id', 'Label','Artist'])
+		nodes_writer.writerow(['Id', 'Label'])
 		for node in nodes:
-			row = [ node["track_uri"], node["track_name"].encode(charset), node["artist_name"].encode(charset) ]
+			row = [ node["track_uri"], node["artist_name"].encode(charset) ]
 			nodes_writer.writerow(row)
 
 	with open('edges.csv', mode='w') as edges_file:

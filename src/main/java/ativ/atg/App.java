@@ -42,7 +42,7 @@ public class App {
     	String inputPlaylist = "July 2013";
     	getRecommendedPlaylist(inputPlaylist);
 //    	getMostFamousAlbum();
-//    	getArtistWithMostDistinctSongs();
+    	getArtistWithMostDistinctSongs();
     	collaborativePlaylistsAreMoreEclectics();
     }
     
@@ -299,11 +299,11 @@ public class App {
 		for (Node track1 : graph.vertexSet()) {
 			int distinctSongs = 1;
 			
-			if(numOfArtistDistinctSongs.containsKey(track1.getArtist())) {
-				numOfArtistDistinctSongs.put(track1.getArtist(), numOfArtistDistinctSongs.get(track1.getArtist()) + 1);
+			if(numOfArtistDistinctSongs.containsKey(track1.getLabel())) {
+				numOfArtistDistinctSongs.put(track1.getLabel(), numOfArtistDistinctSongs.get(track1.getLabel()) + 1);
 			}
 			else {
-				numOfArtistDistinctSongs.put(track1.getArtist(), 1);
+				numOfArtistDistinctSongs.put(track1.getLabel(), 1);
 			}
 		}
 		
@@ -328,11 +328,11 @@ public class App {
 		int nonCollaborativeDistinctArtists = 0;
 
 		for (Node playlist: graph.vertexSet()){
-			if(playlist.isCollaborative().equals("true")) {
-				collaborativeDistinctArtists += playlist.getDistinctArtists();
+			if(playlist.getLabel().equals("true")) {
+				collaborativeDistinctArtists += playlist.getWeight();
 			} 
 			else {
-				nonCollaborativeDistinctArtists += playlist.getDistinctArtists();
+				nonCollaborativeDistinctArtists += playlist.getWeight();
 			}
 		}
 		
