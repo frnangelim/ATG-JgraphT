@@ -9,6 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jgrapht.Graph;
+import org.jgrapht.alg.KosarajuStrongConnectivityInspector;
+import org.jgrapht.alg.interfaces.StrongConnectivityAlgorithm;
+
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
@@ -47,13 +51,20 @@ public class App {
     	int maxWeight = 0;
     	String album = null;
     	
-    	System.out.println(graph.vertexSet().size());
-    	for(Node music : graph.vertexSet()) {
-    		int currentEdgeWeight = graph.edgesOf(music).size();
-			if(currentEdgeWeight > maxWeight) {
-				maxWeight = currentEdgeWeight;
-				album = music.getAlbum();
-			}
+    	 StrongConnectivityAlgorithm<Node, DefaultWeightedEdge> scAlg = 
+    			 new KosarajuStrongConnectivityInspector<>(graph);
+        List<Graph<Node, DefaultWeightedEdge>> stronglyConnectedSubgraphs =
+            scAlg.getStronglyConnectedComponents();
+    	
+    	for(Graph<Node, DefaultWeightedEdge> subgraph : stronglyConnectedSubgraphs) {
+    		for(Node music : subgraph.vertexSet()) {
+    			int currentEdgeWeight = graph.edgesOf(music).size();
+    			if(currentEdgeWeight > maxWeight) {
+    				maxWeight = currentEdgeWeight;
+    				album = music.getAlbum();
+    			}
+    			break;
+    		}
     	}
     	
     	System.out.println("Questão #1");
