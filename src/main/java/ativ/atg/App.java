@@ -35,14 +35,49 @@ public class App {
 	private static final String Q3_CSV_FILE_PATH_EDGES;
 	private static final String Q4_CSV_FILE_PATH_NODES;
 	private static final String Q4_CSV_FILE_PATH_EDGES;
-	
+	 
     public static void main(String[] args) throws IOException {  
     	String inputPlaylist = "July 2013";
     	getRecommendedPlaylist(inputPlaylist);
+    	getMostFamousAlbum();
     }
     
-	
-	
+    public static void getMostFamousAlbum() throws IOException {
+    	WeightedPseudograph<Node, DefaultWeightedEdge> graph = q1Graph();
+    	int maxWeight = 0;
+    	Node album = null;
+    	
+    	for(Node music : graph.vertexSet()) {
+    		int currentEdgeWeight = graph.edgesOf(music).size();
+			if(currentEdgeWeight > maxWeight) {
+				maxWeight = currentEdgeWeight;
+				album = music;
+			}
+    	}
+	}
+    
+	@SuppressWarnings("deprecation")
+	public static WeightedPseudograph q1Graph() throws IOException {
+		// NODES
+		CSVReader reader = new CSVReader(new FileReader(Q1_CSV_FILE_PATH_NODES), ',');
+		
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);
+		
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> musics = csvToBean.parse(beanStrategy, reader);
+		
+		WeightedPseudograph<Node, DefaultWeightedEdge> graph = new WeightedPseudograph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node music : musics) {
+			graph.addVertex(music);
+		}
+		
+		reader.close();
+		graph = setEdgesQ1(graph, Q1_CSV_FILE_PATH_EDGES);
+		
+		return graph;	   
+	}
+    
 	@SuppressWarnings("deprecation")
 	public static WeightedPseudograph q3Graph() throws IOException {
 		// NODES
@@ -61,12 +96,46 @@ public class App {
 		
 		reader.close();
 		
-		graph = setEdges(graph, Q3_CSV_FILE_PATH_EDGES);
+		graph = setEdgesQ3(graph, Q3_CSV_FILE_PATH_EDGES);
 		
 		return graph;	   
 	}
 	
-	public static WeightedPseudograph setEdges(WeightedPseudograph<Node, DefaultWeightedEdge> graph, String path) throws IOException {	
+	public static WeightedPseudograph setEdgesQ1(WeightedPseudograph<Node, DefaultWeightedEdge> graph, String path) throws IOException {	
+		// EDGES
+		CSVReader reader2 = new CSVReader(new FileReader(path), ',');
+	
+		HeaderColumnNameMappingStrategy<Edge> beanStrategy2 = new HeaderColumnNameMappingStrategy<Edge>();
+		beanStrategy2.setType(Edge.class);
+		
+		CsvToBean<Edge> csvToBean2 = new CsvToBean<Edge>();
+		List<Edge> edges = csvToBean2.parse(beanStrategy2, reader2);
+		
+		for(Edge edge : edges) {
+			String sourceID = edge.getSource();
+			String targetID = edge.getTarget();
+			
+			Node source = null;
+			Node target = null;
+			
+			for (Node music : graph.vertexSet()) {
+				
+				if(music.getId().equals(sourceID)) {
+					source = music;
+				}
+				if(music.getId().equals(targetID)) {
+					target = music;
+				}
+			}
+			
+			if(source != null && target != null) {
+				DefaultWeightedEdge edgeObj = graph.addEdge(source, target);
+			}
+		}
+		return graph;
+	}
+	
+	public static WeightedPseudograph setEdgesQ3(WeightedPseudograph<Node, DefaultWeightedEdge> graph, String path) throws IOException {	
 		// EDGES
 		CSVReader reader2 = new CSVReader(new FileReader(path), ',');
 	
