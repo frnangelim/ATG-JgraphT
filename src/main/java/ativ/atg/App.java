@@ -52,31 +52,6 @@ public class App {
     	collaborativePlaylistsAreMoreEclectics();
     }
     
-    public static void getMostFamousAlbum() throws IOException {
-    	WeightedPseudograph<Node, DefaultWeightedEdge> graph = q1Graph();
-    	int maxWeight = 0;
-    	String album = null;
-    	
-    	 StrongConnectivityAlgorithm<Node, DefaultWeightedEdge> scAlg = 
-    			 new KosarajuStrongConnectivityInspector<>(graph);
-        List<Graph<Node, DefaultWeightedEdge>> stronglyConnectedSubgraphs =
-            scAlg.getStronglyConnectedComponents();
-    	
-    	for(Graph<Node, DefaultWeightedEdge> subgraph : stronglyConnectedSubgraphs) {
-    		for(Node music : subgraph.vertexSet()) {
-    			int currentEdgeWeight = graph.edgesOf(music).size();
-    			if(currentEdgeWeight > maxWeight) {
-    				maxWeight = currentEdgeWeight;
-    				album = music.getLabel();
-    			}
-    			break;
-    		}
-    	}
-    	
-    	System.out.println("\nQuestão #1");
-    	System.out.println(album);
-	}
-    
 	@SuppressWarnings("deprecation")
 	public static WeightedPseudograph q1Graph() throws IOException {
 		// NODES
@@ -95,6 +70,29 @@ public class App {
 		
 		reader.close();
 		graph = setEdgesQ1(graph, Q1_CSV_FILE_PATH_EDGES);
+		
+		return graph;	   
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static WeightedPseudograph q2Graph() throws IOException {
+		// NODES
+		CSVReader reader = new CSVReader(new FileReader(Q2_CSV_FILE_PATH_NODES), ',');
+		
+		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
+		beanStrategy.setType(Node.class);
+		
+		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
+		List<Node> tracks = csvToBean.parse(beanStrategy, reader);
+		
+		WeightedPseudograph<Node, DefaultWeightedEdge> graph = new WeightedPseudograph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
+		for (Node track : tracks) {
+			graph.addVertex(track);
+		}
+		
+		reader.close();
+		
+		graph = setEdgesQ2(graph, Q2_CSV_FILE_PATH_EDGES);
 		
 		return graph;	   
 	}
@@ -141,29 +139,6 @@ public class App {
 		reader.close();
 		
 		graph = setEdgesQ4(graph, Q4_CSV_FILE_PATH_EDGES);
-		
-		return graph;	   
-	}
-
-	@SuppressWarnings("deprecation")
-	public static WeightedPseudograph q2Graph() throws IOException {
-		// NODES
-		CSVReader reader = new CSVReader(new FileReader(Q2_CSV_FILE_PATH_NODES), ',');
-		
-		HeaderColumnNameMappingStrategy<Node> beanStrategy = new HeaderColumnNameMappingStrategy<Node>();
-		beanStrategy.setType(Node.class);
-		
-		CsvToBean<Node> csvToBean = new CsvToBean<Node>();
-		List<Node> tracks = csvToBean.parse(beanStrategy, reader);
-		
-		WeightedPseudograph<Node, DefaultWeightedEdge> graph = new WeightedPseudograph<Node, DefaultWeightedEdge>(DefaultWeightedEdge.class); 
-		for (Node track : tracks) {
-			graph.addVertex(track);
-		}
-		
-		reader.close();
-		
-		graph = setEdgesQ2(graph, Q2_CSV_FILE_PATH_EDGES);
 		
 		return graph;	   
 	}
@@ -304,6 +279,31 @@ public class App {
 		}
 		return graph;
 	}
+	
+	public static void getMostFamousAlbum() throws IOException {
+    	WeightedPseudograph<Node, DefaultWeightedEdge> graph = q1Graph();
+    	int maxWeight = 0;
+    	String album = null;
+    	
+    	 StrongConnectivityAlgorithm<Node, DefaultWeightedEdge> scAlg = 
+    			 new KosarajuStrongConnectivityInspector<>(graph);
+        List<Graph<Node, DefaultWeightedEdge>> stronglyConnectedSubgraphs =
+            scAlg.getStronglyConnectedComponents();
+    	
+    	for(Graph<Node, DefaultWeightedEdge> subgraph : stronglyConnectedSubgraphs) {
+    		for(Node music : subgraph.vertexSet()) {
+    			int currentEdgeWeight = graph.edgesOf(music).size();
+    			if(currentEdgeWeight > maxWeight) {
+    				maxWeight = currentEdgeWeight;
+    				album = music.getLabel();
+    			}
+    			break;
+    		}
+    	}
+    	
+    	System.out.println("\nQuestão #1");
+    	System.out.println(album);
+	}
 
 	public static String getArtistWithMostDistinctSongs() throws IOException {
 		WeightedPseudograph<Node, DefaultWeightedEdge> graph = q2Graph();
@@ -313,14 +313,19 @@ public class App {
 		String artistWithMostDistinctSongs = "";
 		int numOfDistinctSongs = 0;
 		
-		for (Node track1 : graph.vertexSet()) {
+		GraphIterator<Node, DefaultWeightedEdge> iterator = new DepthFirstIterator<Node, DefaultWeightedEdge>(
+				graph);
+
+		while (iterator.hasNext()) {
+			Node track = iterator.next();
+			
 			int distinctSongs = 1;
 			
-			if(numOfArtistDistinctSongs.containsKey(track1.getLabel())) {
-				numOfArtistDistinctSongs.put(track1.getLabel(), numOfArtistDistinctSongs.get(track1.getLabel()) + 1);
+			if(numOfArtistDistinctSongs.containsKey(track.getLabel())) {
+				numOfArtistDistinctSongs.put(track.getLabel(), numOfArtistDistinctSongs.get(track.getLabel()) + 1);
 			}
 			else {
-				numOfArtistDistinctSongs.put(track1.getLabel(), 1);
+				numOfArtistDistinctSongs.put(track.getLabel(), 1);
 			}
 		}
 		
@@ -336,6 +341,34 @@ public class App {
 		
 
 		return artistWithMostDistinctSongs;
+	}
+	
+	public static String getRecommendedPlaylist(String inputPlaylist) throws IOException {
+		WeightedPseudograph<Node, DefaultWeightedEdge> graph = q3Graph();
+		
+		Node recommendedPlaylist = null;
+		
+		GraphIterator<Node, DefaultWeightedEdge> iterator = new DepthFirstIterator<Node, DefaultWeightedEdge>(
+				graph);
+
+		while (iterator.hasNext()) {
+			Node playlist = iterator.next();
+		
+			if(playlist.getLabel().equalsIgnoreCase(inputPlaylist)) {
+				int highestEdgeWeight = 0;
+				for(DefaultWeightedEdge edge : graph.edgesOf(playlist)) {
+					int currentEdgeWeight = (int) graph.getEdgeWeight(edge);
+					if(currentEdgeWeight > highestEdgeWeight) {
+						highestEdgeWeight = currentEdgeWeight;
+						recommendedPlaylist = graph.getEdgeTarget(edge);
+					}
+				}
+			}
+		}
+		System.out.println("\nQuestão #3");
+		System.out.println(recommendedPlaylist.getLabel());
+		
+		return recommendedPlaylist.getLabel();
 	}
 
 	public static boolean collaborativePlaylistsAreMoreEclectics() throws IOException {
@@ -360,29 +393,5 @@ public class App {
 		System.out.println(collaborativeDistinctArtists > nonCollaborativeDistinctArtists);
 
 		return collaborativeDistinctArtists > nonCollaborativeDistinctArtists;
-	}
-
-	
-	public static String getRecommendedPlaylist(String inputPlaylist) throws IOException {
-		WeightedPseudograph<Node, DefaultWeightedEdge> graph = q3Graph();
-		
-		Node recommendedPlaylist = null;
-		
-		for(Node playlist : graph.vertexSet()) {
-			if(playlist.getLabel().equalsIgnoreCase(inputPlaylist)) {
-				int highestEdgeWeight = 0;
-				for(DefaultWeightedEdge edge : graph.edgesOf(playlist)) {
-					int currentEdgeWeight = (int) graph.getEdgeWeight(edge);
-					if(currentEdgeWeight > highestEdgeWeight) {
-						highestEdgeWeight = currentEdgeWeight;
-						recommendedPlaylist = graph.getEdgeTarget(edge);
-					}
-				}
-			}
-		}
-		System.out.println("\nQuestão #3");
-		System.out.println(recommendedPlaylist.getLabel());
-		
-		return recommendedPlaylist.getLabel();
 	}
 }
