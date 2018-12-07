@@ -14,6 +14,8 @@ import java.util.Map;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.KosarajuStrongConnectivityInspector;
 import org.jgrapht.alg.interfaces.StrongConnectivityAlgorithm;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -341,12 +343,15 @@ public class App {
 
 		int collaborativeDistinctArtists = 0;
 		int nonCollaborativeDistinctArtists = 0;
+		
+		GraphIterator<Node, DefaultWeightedEdge> iterator = new DepthFirstIterator<Node, DefaultWeightedEdge>(
+				graph);
 
-		for (Node playlist: graph.vertexSet()){
+		while (iterator.hasNext()) {
+			Node playlist = iterator.next();
 			if(playlist.getLabel().equals("true")) {
 				collaborativeDistinctArtists += playlist.getWeight();
-			} 
-			else {
+			} else {
 				nonCollaborativeDistinctArtists += playlist.getWeight();
 			}
 		}
